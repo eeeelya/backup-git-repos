@@ -47,7 +47,7 @@ def clone_repos():
         shutil.move(temp_dir.name + "/" + directory, _get_save_path())
 
 
-def _count_hash_for_file(path, file):
+def _calculate_hash_for_file(path, file):
     hash_sha1 = hashlib.sha1()
     with open(path+"/"+file, "rb") as f:
         for chunk in iter(lambda: f.read(1024), b""):
@@ -55,11 +55,18 @@ def _count_hash_for_file(path, file):
     return hash_sha1.hexdigest()
 
 
-
-
+def get_hash_files_for_repos():
+    dir_list = os.listdir(_get_save_path())
+    for directory in dir_list:
+        if os.path.isdir(_get_save_path() + "/" + directory):
+            with io.open(_get_save_path() + "/" + directory + ".csv", mode="w", encoding="UTF-8") as stream_out:
+                for path, dirs, files in os.walk(_get_save_path() + "/" + directory):
+                    for file in files:
+                        hash_sha1 = _calculate_hash_for_file(path, file)
+                        stream_out.write(file + " - " + hash_sha1 + "\n")
 
 def main():
-    get_hash_files_for_repos()
+    clone_repos()
 
 
 if __name__ == "__main__":
