@@ -43,11 +43,23 @@ def clone_repos():
     dir_list = os.listdir(temp_dir.name)
 
     for directory in dir_list:
+        shutil.rmtree(_get_save_path() + "/" + directory)
         shutil.move(temp_dir.name + "/" + directory, _get_save_path())
 
 
+def _count_hash_for_file(path, file):
+    hash_sha1 = hashlib.sha1()
+    with open(path+"/"+file, "rb") as f:
+        for chunk in iter(lambda: f.read(1024), b""):
+            hash_sha1.update(chunk)
+    return hash_sha1.hexdigest()
+
+
+
+
+
 def main():
-    clone_repos()
+    get_hash_files_for_repos()
 
 
 if __name__ == "__main__":
