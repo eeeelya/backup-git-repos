@@ -8,7 +8,6 @@ import tempfile
 import zipfile
 import shutil
 
-
 SAVE_PATH = "."
 
 
@@ -49,17 +48,17 @@ def clone_repos():
 
 def _calculate_hash_for_file(path, file):
     hash_sha1 = hashlib.sha1()
-    with open(path+"/"+file, "rb") as f:
+    with open(path + "/" + file, "rb") as f:
         for chunk in iter(lambda: f.read(1024), b""):
             hash_sha1.update(chunk)
     return hash_sha1.hexdigest()
 
 
-def get_hash_files_for_repos():
+def get_files_with_hash_for_repos():
     dir_list = os.listdir(_get_save_path())
     for directory in dir_list:
         if os.path.isdir(_get_save_path() + "/" + directory):
-            with io.open(_get_save_path() + "/" + directory + ".csv", mode="w", encoding="UTF-8") as stream_out:
+            with io.open(_get_save_path() + "/" + directory + ".txt", mode="w", encoding="UTF-8") as stream_out:
                 for path, dirs, files in os.walk(_get_save_path() + "/" + directory):
                     for file in files:
                         hash_sha1 = _calculate_hash_for_file(path, file)
