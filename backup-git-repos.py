@@ -1,12 +1,12 @@
 import os
 import git
 import yaml
-import argparse
 import hashlib
 import io
 import tempfile
 import zipfile
 import shutil
+from pathlib import Path
 
 SAVE_PATH = "."
 
@@ -57,15 +57,38 @@ def _calculate_hash_for_file(path, file):
 def get_files_with_hash_for_repos():
     dir_list = os.listdir(_get_save_path())
     for directory in dir_list:
-        if os.path.isdir(_get_save_path() + "/" + directory):
-            with io.open(_get_save_path() + "/" + directory + ".txt", mode="w", encoding="UTF-8") as stream_out:
-                for path, dirs, files in os.walk(_get_save_path() + "/" + directory):
+        path_to_dir = os.path.join(_get_save_path(), directory)
+        if os.path.isdir(path_to_dir):
+            file_name = Path(path_to_dir)
+            with io.open(file_name.with_suffix('.txt'), mode="w", encoding="UTF-8") as stream_out:
+                for path, dirs, files in os.walk(path_to_dir):
                     for file in files:
                         hash_sha1 = _calculate_hash_for_file(path, file)
                         stream_out.write(file + " - " + hash_sha1 + "\n")
 
+
+def archive_repos():
+    dir_list = os.listdir(_get_save_path())
+    for directory in dir_list:
+        path_to_dir = os.path.join(_get_save_path(), directory)
+        if os.path.isdir(path_to_dir):
+            archive_name = Path(path_to_dir)
+            archive = zipfile.ZipFile(archive_name.with_suffix('.zip'), mode="w")
+            for root, dirs, files in os.walk(path_to_dir):
+                for file in files:
+                    archive.write(os.path.join(root, file),
+                                  os.path.relpath(os.path.join(root, file),
+                                                  os.path.join(_get_save_path())))
+            filename = Path(path_to_dir)
+            archive.write(filename.with_suffix('.txt'),
+                          os.path.relpath(filename.with_suffix('.txt'),
+                                          os.path.join(_get_save_path())))
+
+
 def main():
-    clone_repos()
+    # clone_repos()
+    # get_files_with_hash_for_repos()
+    archive_repos()
 
 
 if __name__ == "__main__":
