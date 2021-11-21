@@ -8,6 +8,7 @@ import zipfile
 import shutil
 from pathlib import Path
 
+
 SAVE_PATH = "."
 
 
@@ -30,21 +31,25 @@ def _get_repos_list():
         return repos
     except KeyError:
         print("Bad config! Please, add list of repositories.")
+        exit()
 
 
 def clone_repos():
     temp_dir = tempfile.TemporaryDirectory()
 
     repos = _get_repos_list()
-    for rep in repos:
-        git.Git(temp_dir.name).clone(rep.rstrip())
+    try:
+        for rep in repos:
+            git.Git(temp_dir.name).clone(rep.rstrip())
+    except TypeError:
+        print("List of repositories is empty!")
 
     dir_list = os.listdir(temp_dir.name)
 
     for directory in dir_list:
-        path_to_dir = os.path.join(_get_save_path(), directory)
-        shutil.rmtree(path_to_dir)
-        shutil.move(path_to_dir, _get_save_path())
+        if os.path.isdir(os.path.join(_get_save_path(), directory)):
+            shutil.rmtree(os.path.join(_get_save_path(), directory))
+        shutil.move(os.path.join(temp_dir.name, directory), _get_save_path())
 
 
 def _calculate_hash_for_file(path, file):
@@ -55,13 +60,12 @@ def _calculate_hash_for_file(path, file):
     return hash_sha1.hexdigest()
 
 
-def get_files_with_hash_for_repos():
+def get_files_with_hash():
     dir_list = os.listdir(_get_save_path())
     for directory in dir_list:
         path_to_dir = os.path.join(_get_save_path(), directory)
         if os.path.isdir(path_to_dir):
-            file_name = Path(path_to_dir)
-            with io.open(file_name.with_suffix('.txt'), mode="w", encoding="UTF-8") as stream_out:
+            with io.open(Path(path_to_dir).with_suffix('.txt'), mode="w", encoding="UTF-8") as stream_out:
                 for path, dirs, files in os.walk(path_to_dir):
                     for file in files:
                         hash_sha1 = _calculate_hash_for_file(path, file)
@@ -73,8 +77,7 @@ def archive_repos():
     for directory in dir_list:
         path_to_dir = os.path.join(_get_save_path(), directory)
         if os.path.isdir(path_to_dir):
-            archive_name = Path(path_to_dir)
-            archive = zipfile.ZipFile(archive_name.with_suffix('.zip'), mode="w")
+            archive = zipfile.ZipFile(Path(path_to_dir).with_suffix('.zip'), mode="w")
             for root, dirs, files in os.walk(path_to_dir):
                 for file in files:
                     archive.write(os.path.join(root, file),
@@ -87,8 +90,8 @@ def archive_repos():
 
 
 def main():
-    # clone_repos()
-    # get_files_with_hash_for_repos()
+    clone_repos()
+    get_files_with_hash()
     archive_repos()
 
 
