@@ -1,7 +1,10 @@
+import json
+import stat
 import unittest
 import io
 import yaml
 import os
+import errno
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 import backup_git_repos
@@ -13,33 +16,29 @@ except ImportError:
 
 
 class BackupGitReposTest(TestCase):
-    save_path = "/tmp/backup"
-    config_path = "/tmp"
-    
     config_data = {
-        "save_path": "",
-        "repos": []
+        "save_path": "/home/eeeelya/Desktop/backup",
+        "repos": ["git@github.com:eeeelya/backup-git-repos.git",
+                  "git@github.com:course-4/meteo-centre.git"]
     }
-    # Set the main path to the location of a fake python interpreter.
-    # python_path = "/usr/bin/python3"
 
     def setUp(self):
         self.setUpPyfakefs()
 
-        # The provided path to python interpreter is to exist and be accessible to an active user.
-        # self.fs.create_file(self.python_path)
-
-        self.fs.create_dir(self.save_path)
-
-        # Create fake python kernels to run tests without damage to the current operating system.
-        with io.open(os.path.join(self.save_path, "config.yaml"), mode="wt") as stream_out:
-            # Create a new config on the current machine.
+        with io.open("config.yaml", mode="wt") as stream_out:
             yaml.dump(self.config_data, stream_out)
 
     def tearDown(self):
-        if os.path.exists(self.save_path):
-            # Remove all repositories from current machine.
-            self.fs.remove_object(self.save_path)
+        if os.path.exists("config.yaml"):
+            self.fs.remove_object("config.yaml")
+
+    def test_get_settings_from_config(self):
+        with io.open("config.yaml", mode="rt") as stream_out:
+            settings = yaml.safe_load(stream_out)
+
+        # with mock.patch("backup_git_repos.open") as open_mock:
+
+        self.assertEqual(settings, backup_git_repos._get_settings_from_config())
 
 
 if __name__ == "__main__":
