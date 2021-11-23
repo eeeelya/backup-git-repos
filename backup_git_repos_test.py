@@ -22,9 +22,12 @@ class BackupGitReposTest(TestCase):
                   "git@github.com:course-4/meteo-centre.git"]
     }
     config_path = "."
+    save_path = "."
 
     def setUp(self):
         self.setUpPyfakefs()
+
+        # self.fs.create_dir()
 
         with io.open("config.yaml", mode="wt") as stream_out:
             yaml.dump(self.config_data, stream_out)
@@ -34,9 +37,14 @@ class BackupGitReposTest(TestCase):
             self.fs.remove_object("config.yaml")
 
     def test_get_settings_from_config(self):
+
         with mock.patch("backup_git_repos.open") as open_mock:
             open_mock.side_effect = OSError(errno.EPERM, "")
             backup_git_repos._get_settings_from_config(self.config_path)
+
+    def test_get_save_path(self):
+        self.assertEqual(self.config_data["save_path"], backup_git_repos._get_save_path())
+
 
 
 if __name__ == "__main__":
