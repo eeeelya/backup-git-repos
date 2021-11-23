@@ -12,13 +12,13 @@ from pathlib import Path
 SAVE_PATH = "."
 
 
-def _get_settings_from_config():
-    with io.open("config.yaml", mode="rt", encoding="utf-8") as stream_in:
+def _get_settings_from_config(path):
+    with io.open(os.path.join(path, "config.yaml"), mode="rt", encoding="utf-8") as stream_in:
         settings = yaml.safe_load(stream_in)
     return settings
 
 
-SETTINGS = _get_settings_from_config()
+SETTINGS = _get_settings_from_config(".")
 
 
 def _get_save_path():
