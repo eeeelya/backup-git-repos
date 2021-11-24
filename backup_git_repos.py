@@ -11,38 +11,38 @@ import sys
 import errno
 from pathlib import Path
 
-# LOGGING_CONFIG = {
-#     # Set the preferred schema version.
-#     "version": 1,
-#     "formatters": {
-#         "default": {
-#             "format": "%(asctime)s - %(levelname)s :: %(name)s :: %(message)s",
-#             # Use this string to format the creation time of the record.
-#             "datefmt": "%Y-%m-%d--%H-%M-%S",
-#         },
-#     },
-#     "handlers": {
-#         "console": {
-#             "class": "logging.StreamHandler",
-#             "formatter": "default",
-#             "stream": "ext://sys.stdout",
-#         },
-#         "logfile": {
-#             "class": "logging.FileHandler",
-#             "encoding": "utf-8",
-#             "filename": "backup-git-repos.log",
-#             "formatter": "default",
-#             "mode": "at",
-#         },
-#     },
-#     "loggers": {
-#         "backup-git-repos": {
-#             "handlers": ["console", "logfile"],
-#         },
-#     }
-# }
+LOGGING_CONFIG = {
+    # Set the preferred schema version.
+    "version": 1,
+    "formatters": {
+        "default": {
+            "format": "%(asctime)s - %(levelname)s :: %(name)s :: %(message)s",
+            # Use this string to format the creation time of the record.
+            "datefmt": "%Y-%m-%d--%H-%M-%S",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+            "stream": "ext://sys.stdout",
+        },
+        "logfile": {
+            "class": "logging.FileHandler",
+            "encoding": "utf-8",
+            "filename": "backup-git-repos.log",
+            "formatter": "default",
+            "mode": "at",
+        },
+    },
+    "loggers": {
+        "backup-git-repos": {
+            "handlers": ["console", "logfile"],
+        },
+    }
+}
 
-# logging.config.dictConfig(config=LOGGING_CONFIG)
+logging.config.dictConfig(config=LOGGING_CONFIG)
 _logger = logging.getLogger("backup_git_repos")
 
 SAVE_PATH = "."
